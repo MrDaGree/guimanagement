@@ -3,12 +3,19 @@ Menu = {}
 
 GUI.maxVisOptions = 16
 
+GUI.titleTextSize = {0.85, 0.85}
+GUI.titleRectSize = {0.23, 0.085}
+
+GUI.optionTextSize = {0.5, 0.5}
+GUI.optionRectSize = {0.23, 0.035}
+
 GUI.titleText = {255, 255, 255, 255, 7}
 GUI.titleRect = {52, 73, 94, 255}
 GUI.optionText = {255, 255, 255, 255, 6}
 GUI.optionRect = {40, 40, 40, 190}
 GUI.scroller = {127, 140, 140, 240}
 
+local curMenu = nil
 local menuX = 0.7
 local selectPressed = false
 local leftPressed = false
@@ -37,8 +44,9 @@ function GUI.Rect(color, position, size)
 end
 
 function Menu.Title(title)
-	GUI.Text(title, GUI.titleText, {menuX, 0.095}, {0.85, 0.85}, true)
-	GUI.Rect(GUI.titleRect, {menuX, 0.1175}, {0.23, 0.085})
+	GUI.Text(title, GUI.titleText, {menuX, 0.095}, GUI.titleTextSize, true)
+	GUI.Rect(GUI.titleRect, {menuX, 0.1175}, GUI.titleRectSize)
+	curMenu = title
 end
 
 function Menu.Option(option)
@@ -52,16 +60,16 @@ function Menu.Option(option)
 	end
 
 	if(currentOption <= GUI.maxVisOptions and optionCount <= GUI.maxVisOptions) then
-		GUI.Text(option, GUI.optionText, {menuX - 0.1, optionCount * 0.035 + 0.125},  {0.5, 0.5 }, false)
-		GUI.Rect(GUI.optionRect, { menuX, optionCount * 0.035 + 0.1415 }, { 0.23, 0.035 })
+		GUI.Text(option, GUI.optionText, {menuX - 0.1, optionCount * 0.035 + 0.125},  GUI.optionTextSize, false)
+		GUI.Rect(GUI.optionRect, { menuX, optionCount * 0.035 + 0.1415 }, GUI.optionRectSize)
 		if(thisOption) then
-			GUI.Rect(GUI.scroller, { menuX, optionCount * 0.035 + 0.1415 }, { 0.23, 0.035 })
+			GUI.Rect(GUI.scroller, { menuX, optionCount * 0.035 + 0.1415 }, GUI.optionRectSize)
 		end
 	elseif (optionCount > currentOption - GUI.maxVisOptions and optionCount <= currentOption) then
-		GUI.Text(option, GUI.optionText, { menuX - 0.1, optionCount - (currentOption - GUI.maxVisOptions) * 0.035 + 0.125 }, { 0.5, 0.5 }, false);
-		GUI.Rect(GUI.optionRect, { menuX, optionCount - (currentOption - GUI.maxVisOptions) * 0.035+0.1415 }, { 0.23, 0.035 });
+		GUI.Text(option, GUI.optionText, { menuX - 0.1, optionCount - (currentOption - GUI.maxVisOptions) * 0.035 + 0.125 }, GUI.optionTextSize, false);
+		GUI.Rect(GUI.optionRect, { menuX, optionCount - (currentOption - GUI.maxVisOptions) * 0.035+0.1415 }, GUI.optionRectSize);
 		if(thisOption) then
-			GUI.Rect(GUI.scroller, { menuX, optionCount - (currentOption - maxVisOptions) * 0.035 + 0.1415 }, { 0.23, 0.035 })
+			GUI.Rect(GUI.scroller, { menuX, optionCount - (currentOption - maxVisOptions) * 0.035 + 0.1415 }, GUI.optionRectSize)
 		end
 	end
 
@@ -175,4 +183,5 @@ function Menu.updateSelection()
 		selectPressed = true
 	end
 	optionCount = 0
+	curMenu = nil
 end
