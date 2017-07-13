@@ -1,7 +1,7 @@
 GUI = {}
 Menu = {}
 
-GUI.maxVisOptions = 16
+GUI.maxVisOptions = 10
 
 GUI.titleTextSize = {0.85, 0.85}
 GUI.titleRectSize = {0.23, 0.085}
@@ -17,8 +17,9 @@ GUI.scroller = {127, 140, 140, 240}
 
 local curMenu = nil
 local menuX = 0.7
-local menuYOption = 0.16
-local menuYRect = 0.1765
+local menuYModify = 0.3174 -- Default: 0.1174
+local menuYOptionDiv = 9.1 -- Default: 3.56
+local menuYOptionAdd = 0.342 -- Default: 0.142
 local selectPressed = false
 local leftPressed = false
 local rightPressed = false
@@ -46,9 +47,8 @@ function GUI.Rect(color, position, size)
 end
 
 function Menu.Title(title)
-	GUI.Text(title, GUI.titleText, {menuX, menuYOption - 0.065}, GUI.titleTextSize, true)
-	GUI.Rect(GUI.titleRect, {menuX, menuYRect - 0.059}, GUI.titleRectSize)
-	curMenu = title
+	GUI.Text(title, GUI.titleText, {menuX, menuYModify - 0.02241}, {0.85, 0.85}, true)
+	GUI.Rect(GUI.titleRect, {menuX, menuYModify}, {0.23, 0.085})
 end
 
 function Menu.Option(option)
@@ -62,16 +62,16 @@ function Menu.Option(option)
 	end
 
 	if(currentOption <= GUI.maxVisOptions and optionCount <= GUI.maxVisOptions) then
-		GUI.Text(option, GUI.optionText, {menuX - 0.1, optionCount * menuYOption},  GUI.optionTextSize, false)
-		GUI.Rect(GUI.optionRect, { menuX, optionCount * menuYRect }, GUI.optionRectSize)
+		GUI.Text(option, GUI.optionText, {menuX - 0.1, ((menuYOptionAdd - 0.018) + (optionCount / menuYOptionDiv) * menuYModify)},  {0.5, 0.5 }, false)
+		GUI.Rect(GUI.optionRect, { menuX, (menuYOptionAdd + (optionCount / menuYOptionDiv) * menuYModify) }, { 0.23, 0.035 })
 		if(thisOption) then
-			GUI.Rect(GUI.scroller, { menuX, optionCount * menuYRect }, GUI.optionRectSize)
+			GUI.Rect(GUI.scroller, { menuX, (menuYOptionAdd + (optionCount / menuYOptionDiv) * menuYModify) }, { 0.23, 0.035 })
 		end
 	elseif (optionCount > currentOption - GUI.maxVisOptions and optionCount <= currentOption) then
-		GUI.Text(option, GUI.optionText, { menuX - 0.1, optionCount - (currentOption - GUI.maxVisOptions) * menuYOption }, GUI.optionTextSize, false);
-		GUI.Rect(GUI.optionRect, { menuX, optionCount - (currentOption - GUI.maxVisOptions) * menuYRect }, GUI.optionRectSize);
+		GUI.Text(option, GUI.optionText, {menuX - 0.1, ((menuYOptionAdd - 0.018) + ((optionCount - (currentOption - GUI.maxVisOptions)) / menuYOptionDiv) * menuYModify)},  {0.5, 0.5 }, false)
+		GUI.Rect(GUI.optionRect, { menuX, (menuYOptionAdd + ((optionCount - (currentOption - GUI.maxVisOptions)) / menuYOptionDiv) * menuYModify) }, { 0.23, 0.035 })
 		if(thisOption) then
-			GUI.Rect(GUI.scroller, { menuX, optionCount - (currentOption - maxVisOptions) * menuYRect }, GUI.optionRectSize)
+			GUI.Rect(GUI.scroller, { menuX, (menuYOptionAdd + ((optionCount - (currentOption - GUI.maxVisOptions)) / menuYOptionDiv) * menuYModify) }, { 0.23, 0.035 })
 		end
 	end
 
@@ -87,15 +87,15 @@ function Menu.Bool(option, bool, cb)
 
 	if(currentOption <= GUI.maxVisOptions and optionCount <= GUI.maxVisOptions) then
 		if(bool) then
-			GUI.Text("~g~ON", GUI.optionText, { menuX + 0.068, optionCount * menuYOption }, { 0.5, 0.5 }, true)
+			GUI.Text("~g~ON", GUI.optionText, { menuX + 0.068, ((menuYOptionAdd - 0.018) + (optionCount / menuYOptionDiv) * menuYModify)}, { 0.5, 0.5 }, true)
 		else
-			GUI.Text("~r~OFF", GUI.optionText, { menuX + 0.068, optionCount * menuYOption }, { 0.5, 0.5 }, true)
+			GUI.Text("~r~OFF", GUI.optionText, { menuX + 0.068, ((menuYOptionAdd - 0.018) + (optionCount / menuYOptionDiv) * menuYModify)}, { 0.5, 0.5 }, true)
 		end
 	elseif(optionCount > currentOption - GUI.maxVisOptions and optionCount <= currentOption) then
 		if(bool) then
-			GUI.Text("~g~ON", GUI.optionText, { menuX + 0.068, optionCount - (currentOption - GUI.maxVisOptions) * menuYOption }, { 0.5, 0.5 }, true)
+			GUI.Text("~g~ON", GUI.optionText, { menuX + 0.068, ((menuYOptionAdd - 0.018) + ((optionCount - (currentOption - GUI.maxVisOptions)) / menuYOptionDiv) * menuYModify)}, { 0.5, 0.5 }, true)
 		else
-			GUI.Text("~r~OFF", GUI.optionText, { menuX + 0.068, optionCount - (currentOption - GUI.maxVisOptions) * menuYOption }, { 0.5, 0.5 }, true)
+			GUI.Text("~r~OFF", GUI.optionText, { menuX + 0.068, ((menuYOptionAdd - 0.018) + ((optionCount - (currentOption - GUI.maxVisOptions)) / menuYOptionDiv) * menuYModify)}, { 0.5, 0.5 }, true)
 		end
 	end
 
@@ -120,9 +120,9 @@ function Menu.Int(option, int, min, max, cb)
 	end
 
 	if (currentOption <= GUI.maxVisOptions and optionCount <= GUI.maxVisOptions) then
-		GUI.Text(tostring(int), GUI.optionText, { menuX + 0.068, optionCount * menuYOption }, { 0.5, 0.5 }, true)
+		GUI.Text(tostring(int), GUI.optionText, { menuX + 0.068, ((menuYOptionAdd - 0.018) + (optionCount / menuYOptionDiv) * menuYModify)}, { 0.5, 0.5 }, true)
 	elseif (optionCount > currentOption - GUI.maxVisOptions and optionCount <= currentOption) then
-		GUI.Text(tostring(int), GUI.optionText, { menuX + 0.068, optionCount - (currentOption - maxVisOptions) * menuYOption }, { 0.5, 0.5 }, true)
+		GUI.Text(tostring(int), GUI.optionText, { menuX + 0.068, ((menuYOptionAdd - 0.018) + ((optionCount - (currentOption - GUI.maxVisOptions)) / menuYOptionDiv) * menuYModify)}, { 0.5, 0.5 }, true)
 	end
 
 	if (optionCount == currentOption and selectPressed) then cb(int) return true
@@ -148,9 +148,9 @@ function Menu.StringArray(option, array, position, cb)
 	end
 
 	if (currentOption <= GUI.maxVisOptions and optionCount <= GUI.maxVisOptions) then
-		GUI.Text(array[position], GUI.optionText, { menuX + 0.068, optionCount * menuYOption }, { 0.5, 0.5 }, true)
+		GUI.Text(array[position], GUI.optionText, { menuX + 0.068, ((menuYOptionAdd - 0.018) + (optionCount / menuYOptionDiv) * menuYModify)}, { 0.5, 0.5 }, true)
 	elseif (optionCount > currentOption - GUI.maxVisOptions and optionCount <= currentOption) then
-		GUI.Text(array[position], GUI.optionText, { menuX + 0.068, optionCount - (currentOption - GUI.maxVisOptions) * menuYOption }, { 0.5, 0.5 }, true)
+		GUI.Text(array[position], GUI.optionText, { menuX + 0.068, ((menuYOptionAdd - 0.018) + ((optionCount - (currentOption - GUI.maxVisOptions)) / menuYOptionDiv) * menuYModify)}, { 0.5, 0.5 }, true)
 	end
 
 	if (optionCount == currentOption and selectPressed) then cb(position) return true
@@ -159,6 +159,7 @@ function Menu.StringArray(option, array, position, cb)
 
 	return false
 end
+
 
 function Menu.updateSelection()
 	selectPressed = false;
