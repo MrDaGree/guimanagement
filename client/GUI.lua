@@ -1,6 +1,8 @@
 GUI = {}
 Menu = {}
 
+Menus = {}
+
 GUI.maxVisOptions = 10
 
 GUI.titleTextSize = {0.85, 0.85}
@@ -15,6 +17,7 @@ GUI.optionText = {255, 255, 255, 255, 6}
 GUI.optionRect = {40, 40, 40, 190}
 GUI.scroller = {127, 140, 140, 240}
 
+local prevMenu = nil
 local curMenu = nil
 local menuX = 0.7
 local menuYModify = 0.3174 -- Default: 0.1174
@@ -30,6 +33,35 @@ function tablelength(T)
   local count = 0
   for _ in pairs(T) do count = count + 1 end
   return count
+end
+
+function Menu.SetupMenu(menu, title)
+	Menus[menu] = {}
+	Menus[menu].title = title
+	Menus[menu].optionCount = 0
+	Menus[menu].options = {}
+end
+
+function Menu.addOption(menu, option)
+	if not (Menus[menu].title == nil) then
+		Menus[menu].optionCount = Menus[menu].optionCount + 1
+		Menus[menu].options[Menus[menu].optionCount] = option
+	end
+end
+
+function Menu.Switch(prevmenu, menu)
+	curMenu = menu
+	prevMenu = prevmenu
+end
+
+function Menu.DisplayCurMenu()
+	if not (curMenu == "") then
+		Menu.Title(Menus[curMenu].title)
+		for k,v in pairs(Menus[curMenu].options) do
+			v()
+		end
+		Menu.updateSelection()
+	end
 end
 
 function GUI.Text(text, color, position, size, center)
@@ -73,6 +105,24 @@ function Menu.Option(option)
 		if(thisOption) then
 			GUI.Rect(GUI.scroller, { menuX, (menuYOptionAdd + ((optionCount - (currentOption - GUI.maxVisOptions)) / menuYOptionDiv) * menuYModify) }, { 0.23, 0.035 })
 		end
+	end
+
+	if (optionCount == currentOption and selectPressed) then
+		return true
+	end
+
+	return false
+end
+
+function Menu.changeMenu(option, menu)
+	if (Menu.Option(option)) then
+		Menu.Switch(curMenu, menu)
+	end
+
+	if(currentOption <= GUI.maxVisOptions and optionCount <= GUI.maxVisOptions) then
+		GUI.Text(">>", GUI.optionText, { menuX + 0.068, ((menuYOptionAdd - 0.018) + (optionCount / menuYOptionDiv) * menuYModify)}, { 0.5, 0.5 }, true)
+	elseif(optionCount > currentOption - GUI.maxVisOptions and optionCount <= currentOption) then
+		GUI.Text(">>", GUI.optionText, { menuX + 0.068, ((menuYOptionAdd - 0.018) + ((optionCount - (currentOption - GUI.maxVisOptions)) / menuYOptionDiv) * menuYModify)}, { 0.5, 0.5 }, true)
 	end
 
 	if (optionCount == currentOption and selectPressed) then
@@ -184,7 +234,13 @@ function Menu.updateSelection()
 		rightPressed = true
 	elseif IsControlJustPressed(1, 176)  then
 		selectPressed = true
+	elseif IsControlJustPressed(1, 177) then
+		if (prevMenu == nil) then
+			Menu.Switch(nil, "")
+		end
+		if not (prevMenu == nil) then
+			Menu.Switch(nil, prevMenu)
+		end
 	end
 	optionCount = 0
-	curMenu = nil
 end
