@@ -195,7 +195,7 @@ function Menu.StringArray(option, array, position, cb)
 		local max = tablelength(array)
 		local min = 1
 		if (leftPressed) then
-			if(position == min) then position = position - 1 else position = max end
+			if(position > min) then position = position - 1 else position = max end
 		end
 		if (rightPressed) then
 			if(position < max) then position = position + 1 else position = min end
