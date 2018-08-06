@@ -1,4 +1,4 @@
--- Made By: MrDaGree (aka TylerMcGrubber)
+-- Made By: MrDaGree
 
 description "GUI Management" -- Resource Descrption
 
